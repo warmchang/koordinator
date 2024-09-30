@@ -133,7 +133,7 @@ func newTestSharedLister(pods []*corev1.Pod, nodes []*corev1.Node) *testSharedLi
 	}
 }
 
-func makePg(name, namespace string, min int32, creationTime *time.Time, minResource *corev1.ResourceList) *v1alpha1.PodGroup {
+func makePg(name, namespace string, min int32, creationTime *time.Time, minResource corev1.ResourceList) *v1alpha1.PodGroup {
 	var ti int32 = 10
 	pg := &v1alpha1.PodGroup{
 		ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: namespace},
@@ -640,6 +640,7 @@ func TestPostFilter(t *testing.T) {
 			if tt.pod.Name == "pod3" {
 				wg.Add(2)
 			}
+
 			for _, pod := range tt.pods {
 				tmpPod := pod
 				suit.Handle.(framework.Framework).RunPermitPlugins(context.Background(), cycleState, tmpPod, "")
@@ -652,6 +653,7 @@ func TestPostFilter(t *testing.T) {
 					defer wg.Done()
 				}()
 			}
+
 			if tt.pod.Name == "pod3" {
 				totalWaitingPods := 0
 				suit.Handle.IterateOverWaitingPods(
